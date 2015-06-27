@@ -10,12 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 public class MainActivity extends ActionBarActivity
@@ -23,9 +18,12 @@ public class MainActivity extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private boolean mConnected;
-    private boolean mMaster;
-    private String mIp;
+    public static int DISCONNECTED = 0;
+    public static int CONNECTED = 1;
+    public static int MASTER = 2;
+
+    private int mState = DISCONNECTED;
+    private String mIp = "";
 
     private CharSequence mTitle;
     private Server mServer;
@@ -51,9 +49,7 @@ public class MainActivity extends ActionBarActivity
             Log.e("Nope","The server did not run!");
         }
 
-        mConnected = false;
-        mMaster = false;
-        mIp = "";
+        Log.e("Recreate", "Recreate");
     }
 
     @Override
@@ -81,13 +77,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onCreateServer(int position) {
-
-    }
-
-    @Override
-    public void onConnectServer(String ip, boolean connected) {
-        mConnected = connected;
+    public void onStateChanged(int state, String ip) {
+        mState = state;
         mIp = ip;
     }
 
@@ -102,8 +93,13 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public boolean getIsConnected() {
-        return mConnected;
+    public int getState() {
+        return mState;
+    }
+
+    @Override
+    public String getIp() {
+        return mIp;
     }
 
     public void onSectionAttached(int number) {

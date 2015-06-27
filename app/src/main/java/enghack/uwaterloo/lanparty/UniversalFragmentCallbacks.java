@@ -5,10 +5,10 @@ package enghack.uwaterloo.lanparty;
  */
 public interface UniversalFragmentCallbacks {
     public void onNavigationDrawerItemSelected(int position);
-    public void onCreateServer(int position);
-    public void onConnectServer(String ip, boolean connected);
+    public void onStateChanged(int state, String ip);
     public void onAddSong(int position);
     public void onDeleteSong(int position);
 
-    public boolean getIsConnected();
+    public int getState();
+    public String getIp();
 }

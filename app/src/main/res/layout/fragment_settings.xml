@@ -4,14 +4,14 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context="enghack.uwaterloo.lanparty.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Settings" android:textSize="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:textColor="#000"/>
 
     <com.dd.CircularProgressButton

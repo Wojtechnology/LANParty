@@ -70,15 +70,22 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mIpDisplay = (TextView) getView().findViewById(R.id.ip_display);
         mIpEdit = (EditText) getView().findViewById(R.id.ip_edit);
         mCreateButton = (CircularProgressButton) getView().findViewById(R.id.create_button);
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("SF", "Clicked Create");
+                int state = mCallbacks.getState();
+                String ip = mCallbacks.getIp();
 
-                mIpDisplay.setText("Running on " + Utils.getIPAddress(true));
+                if (state == MainActivity.CONNECTED) {
+                    resetUI(MainActivity.DISCONNECTED, "");
+                } else {
+                    // Start running server here
+                    resetUI(MainActivity.MASTER, Utils.getIPAddress(true));
+                }
             }
         });
         mConnectButton = (ActionProcessButton) getView().findViewById(R.id.connect_button);
@@ -92,6 +99,43 @@ public class SettingsFragment extends Fragment {
                 new ConnectTask().execute(mIpEdit.getText().toString());
             }
         });
+
+        int state = mCallbacks.getState();
+        String ip = mCallbacks.getIp();
+
+        Log.e("Settings", "onViewCreated " + ip);
+
+        resetUI(state, ip);
+    }
+
+    private void resetUI(int state, String ip) {
+        mCallbacks.onStateChanged(state, ip);
+        if(state == MainActivity.DISCONNECTED) {
+            mIpEdit.setEnabled(true);
+            mConnectButton.setProgress(0);
+            mCreateButton.setProgress(0);
+            mConnectButton.setText("Connect");
+            mCreateButton.setText("Start a server...");
+            mConnectButton.setEnabled(true);
+            mCreateButton.setEnabled(true);
+            mIpDisplay.setText("Not running...");
+        } else if(state == MainActivity.CONNECTED) {
+            mIpEdit.setEnabled(false);
+            mConnectButton.setProgress(100);
+            mCreateButton.setProgress(0);
+            mCreateButton.setText("Disconnect");
+            mConnectButton.setEnabled(false);
+            mCreateButton.setEnabled(true);
+            mIpDisplay.setText("Connected to " + mCallbacks.getIp());
+        } else {
+            mIpEdit.setEnabled(false);
+            mConnectButton.setProgress(0);
+            mCreateButton.setProgress(100);
+            mConnectButton.setText("Shutdown server...");
+            mConnectButton.setEnabled(true);
+            mCreateButton.setEnabled(false);
+            mIpDisplay.setText("Running on " + mCallbacks.getIp());
+        }
     }
 
     private class ConnectTask extends AsyncTask<String, Void, Boolean> {
@@ -130,11 +174,9 @@ public class SettingsFragment extends Fragment {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
-                mConnectButton.setProgress(100);
+                resetUI(MainActivity.CONNECTED, mIpEdit.getText().toString());
             } else {
-                mConnectButton.setProgress(-1);
-                mIpEdit.setEnabled(true);
-                mConnectButton.setEnabled(true);
+                resetUI(MainActivity.DISCONNECTED, "");
             }
         }
     };
