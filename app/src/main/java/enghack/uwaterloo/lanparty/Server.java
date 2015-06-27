@@ -26,10 +26,12 @@ import fi.iki.elonen.NanoHTTPD;
 public class Server extends NanoHTTPD {
 
     private Context mContext;
+    private Masterbater mMasterbater;
 
-    public Server(Context context) throws IOException
+    public Server(Context context, Masterbater master) throws IOException
     {
         super(8080);
+        mMasterbater = master;
         mContext = context;
     }
 
@@ -113,16 +115,6 @@ public class Server extends NanoHTTPD {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    mediaPlayer.setDataSource(destinationFolder.getPath());
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start();
             }
             else if(method.equals("DELETE")) {
                 //Delete works

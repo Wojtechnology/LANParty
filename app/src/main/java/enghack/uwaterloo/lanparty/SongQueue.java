@@ -26,6 +26,10 @@ public class SongQueue {
         return mSongQueue.poll();
     }
 
+    public int size() {
+        return mSongQueue.size();
+    }
+
     public List<Song> displayList(){
         List<Song> disList = new LinkedList<>(mSongQueue);
         return disList;
