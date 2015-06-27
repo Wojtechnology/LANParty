@@ -1,12 +1,18 @@
 package enghack.uwaterloo.lanparty;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -63,8 +69,31 @@ public class MyMusicFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_music, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_music, container, false);
+
+        ListView songListView = (ListView) view.findViewById(R.id.my_music_song_list);
+        ArrayList<Song> songList = new ArrayList<Song>();
+        ContentResolver musicResolver = getActivity().getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri,null, null, null, null);
+
+        if(musicCursor!=null && musicCursor.moveToFirst()){
+            int titleColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            do {
+                int thisId = musicCursor.getInt(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist));
+            } while (musicCursor.moveToNext());
+        }
+        SongListAdapter adapter = new SongListAdapter(getActivity(), songList);
+        songListView.setAdapter(adapter);
+        return view;
     }
 
     @Override
