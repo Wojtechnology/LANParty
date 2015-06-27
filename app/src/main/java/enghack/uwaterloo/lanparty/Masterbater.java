@@ -27,7 +27,11 @@ public class Masterbater {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Song oldSong = mSongQueue.pop_front();
-                mContext.deleteFile(oldSong.getUri());
+                try {
+                    mContext.deleteFile(oldSong.getUri());
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
                 if (mSongQueue.size() > 0){
                     playSong(mSongQueue.peek_front());
                 }
@@ -44,13 +48,14 @@ public class Masterbater {
 
     public void addSong(Song song){
         mSongQueue.push_back(song);
-        if (mSongQueue.size() == 0 && !mMediaPlayer.isPlaying()){
+        if (mSongQueue.size() == 1 && !mMediaPlayer.isPlaying()){
             playSong(song);
         }
     }
 
     public void playSong(Song song){
         try {
+            mMediaPlayer.reset();
             mMediaPlayer.setDataSource(song.getUri());
             mMediaPlayer.prepare(); // might take long! (for buffering, etc)
         } catch (IOException e) {
@@ -62,6 +67,7 @@ public class Masterbater {
     public void stop() {
         mServer.stop();
         mMediaPlayer.stop();
+        mMediaPlayer.release();
     }
 
 }

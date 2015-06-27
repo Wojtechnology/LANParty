@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,12 +82,17 @@ public class Server extends NanoHTTPD {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 Log.e("Artist", metadata.optString("artist"));
                 Log.e("Title", metadata.optString("title"));
+
+                // Shows where the song came from
+                final Map<String, String> finalHeader = header;
                 final JSONObject finalMetadata = metadata;
                 main.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Toast.makeText(mContext, finalMetadata.optString("title") + " received from " + finalHeader.get("http-client-ip"), Toast.LENGTH_SHORT).show();
                         main.setBottomBar(finalMetadata.optString("artist"), finalMetadata.optString("title"));
                     }
                 });
@@ -115,6 +121,9 @@ public class Server extends NanoHTTPD {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                mMasterbater.addSong(new Song(69, metadata.optString("title"), metadata.optString("artist"), destinationFolder.getName()));
+
             }
             else if(method.equals("DELETE")) {
                 //Delete works
