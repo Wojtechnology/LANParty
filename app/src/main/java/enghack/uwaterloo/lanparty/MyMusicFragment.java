@@ -9,11 +9,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -56,7 +59,7 @@ public class MyMusicFragment extends Fragment {
 
     private UniversalFragmentCallbacks mCallbacks;
     private ListView songListView;
-
+    private EditText searchBar;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -93,7 +96,7 @@ public class MyMusicFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_music, container, false);
 
         songListView = (ListView) view.findViewById(R.id.my_music_song_list);
-
+        searchBar = (EditText) view.findViewById(R.id.my_music_search);
         ArrayList<Song> songList = new ArrayList<Song>();
         ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -116,8 +119,26 @@ public class MyMusicFragment extends Fragment {
             } while (musicCursor.moveToNext());
         }
 
-        SongListAdapter adapter = new SongListAdapter(getActivity(), songList);
+        final SongListAdapter adapter = new SongListAdapter(getActivity(), songList);
         songListView.setAdapter(adapter);
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s.toString());
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         songListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

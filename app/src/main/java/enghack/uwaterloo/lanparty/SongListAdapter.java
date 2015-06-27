@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,12 +15,13 @@ import java.util.ArrayList;
 /**
  * Created by naren on 27/06/15.
  */
-public class SongListAdapter extends BaseAdapter {
-
+public class SongListAdapter extends BaseAdapter implements Filterable{
+    private ArrayList<Song> all_songs = null;
     private ArrayList<Song> songs = null;
     private LayoutInflater songLayoutInf = null;
 
     public SongListAdapter(Context c, ArrayList<Song> songs) {
+        this.all_songs = songs;
         this.songs = songs;
         this.songLayoutInf = LayoutInflater.from(c);
     }
@@ -54,5 +57,31 @@ public class SongListAdapter extends BaseAdapter {
         return songLL;
     }
 
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                ArrayList<Song> filteredresults = new ArrayList<Song>();
+                for(int i=0; i<all_songs.size(); i++) {
+                    if (all_songs.get(i).getArtist().toLowerCase().contains(constraint.toString().toLowerCase()) ||
+                            all_songs.get(i).getTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        filteredresults.add(all_songs.get(i));
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = filteredresults;
+                results.count = filteredresults.size();
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                songs = (ArrayList<Song>) results.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 
 }
