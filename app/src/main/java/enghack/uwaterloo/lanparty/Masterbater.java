@@ -34,6 +34,7 @@ public class Masterbater {
                 if (mSongQueue.size() > 0){
                     playSong(mSongQueue.peek_front());
                 }
+                updateQueue();
             }
         });
         try {
@@ -53,6 +54,20 @@ public class Masterbater {
         mSongQueue.push_back(song);
         if (mSongQueue.size() == 1 && !mMediaPlayer.isPlaying()){
             playSong(song);
+        }
+        updateQueue();
+    }
+
+    private void updateQueue(){
+        MainActivity main = (MainActivity) mContext;
+        if (main.mQueueAdapter != null) {
+            final MainActivity finalMain = main;
+            main.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    finalMain.mQueueAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
