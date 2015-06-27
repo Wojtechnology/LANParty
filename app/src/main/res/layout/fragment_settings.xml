@@ -1,10 +1,76 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context="enghack.uwaterloo.lanparty.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="Settings" />
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Settings" android:textSize="24dp"
+        android:layout_marginTop="32dp"
+        android:textColor="#000"/>
 
-</FrameLayout>
+    <com.dd.CircularProgressButton
+        android:id="@+id/create_button"
+        android:layout_width="196dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:cpb_cornerRadius="24dp"
+        app:cpb_textComplete="@string/created"
+        app:cpb_textError="@string/not_created"
+        app:cpb_textIdle="@string/create"
+        app:cpb_selectorIdle="@drawable/connect_button_color"/>
+
+    <TextView android:id="@+id/ip_display" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:text="Not Running..."
+        android:layout_marginTop="16dp"
+        android:textColor="#000"/>
+
+    <EditText
+        android:id="@+id/ip_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:hint="192.168.0.XXX"
+        android:layout_marginTop="32dp"
+        android:maxLines="1"
+        android:inputType="textUri"/>
+
+    <com.dd.processbutton.iml.ActionProcessButton
+        android:id="@+id/connect_button"
+        android:layout_width="196dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Connect"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        custom:pb_colorComplete="#4CAF50"
+        custom:pb_colorNormal="#2196F3"
+        custom:pb_colorPressed="#0D47A1"
+        custom:pb_colorProgress="#673AB7"
+        custom:pb_textComplete="Success"
+        custom:pb_textProgress="Loading"
+        custom:pb_textError="Error"
+        custom:pb_colorError="#F44336" />
+
+    <!--background color which will be displayed when progress is [100]-->
+    custom:pb_colorComplete
+    <!--text which will be displayed when progress is [100]-->
+    custom:pb_textComplete
+    <!--loading color which will be displayed when progress is [1-99]-->
+    custom:pb_colorProgress
+    <!--text which will be displayed when progress is [1-99]-->
+    custom:pb_textProgress
+    <!--text which will be displayed when progress is [-1]-->
+    custom:pb_textError="Error"
+    <!--background color which will be displayed when progress is [-1]-->
+    custom:pb_colorComplete
+
+</LinearLayout>
