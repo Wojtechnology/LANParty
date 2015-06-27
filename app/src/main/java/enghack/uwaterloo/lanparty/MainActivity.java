@@ -29,6 +29,8 @@ public class MainActivity extends ActionBarActivity
 
     private CharSequence mTitle;
 
+    public QueueAdapter mQueueAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +94,11 @@ public class MainActivity extends ActionBarActivity
     @Override
     public Masterbater getMaster() {
         return mMasterbater;
+    }
+
+    @Override
+    public void setQueueAdapter(QueueAdapter adapter){
+        mQueueAdapter = adapter;
     }
 
     public void onSectionAttached(int number) {

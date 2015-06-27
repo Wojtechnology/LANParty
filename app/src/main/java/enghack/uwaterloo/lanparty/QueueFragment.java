@@ -70,7 +70,9 @@ public class QueueFragment extends Fragment {
         if (main.getState() == main.MASTER) {
             SongQueue songQueue = main.getMaster().getSongQueue();
             ListView queueListView = (ListView) view.findViewById(R.id.queue_list);
-            queueListView.setAdapter(new QueueAdapter(getActivity(), songQueue));
+            QueueAdapter adapter = new QueueAdapter(getActivity(), songQueue);
+            queueListView.setAdapter(adapter);
+            main.setQueueAdapter(adapter);
         }
         return view;
     }
