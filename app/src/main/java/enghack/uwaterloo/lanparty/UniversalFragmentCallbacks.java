@@ -6,7 +6,9 @@ package enghack.uwaterloo.lanparty;
 public interface UniversalFragmentCallbacks {
     public void onNavigationDrawerItemSelected(int position);
     public void onCreateServer(int position);
-    public void onConnectServer(int position);
+    public void onConnectServer(String ip, boolean connected);
     public void onAddSong(int position);
     public void onDeleteSong(int position);
+
+    public boolean getIsConnected();
 }

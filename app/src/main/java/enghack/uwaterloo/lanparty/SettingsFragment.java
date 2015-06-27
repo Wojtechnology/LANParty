@@ -2,6 +2,7 @@ package enghack.uwaterloo.lanparty;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,13 @@ import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
 import com.dd.processbutton.iml.ActionProcessButton;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 /**
@@ -77,10 +85,59 @@ public class SettingsFragment extends Fragment {
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("SF", "Clicked Connect");
+                mConnectButton.setMode(ActionProcessButton.Mode.ENDLESS);
+                mConnectButton.setProgress(1);
+                mIpEdit.setEnabled(false);
+                mConnectButton.setEnabled(false);
+                new ConnectTask().execute(mIpEdit.getText().toString());
             }
         });
     }
+
+    private class ConnectTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                URL obj = new URL("http", strings[0], 8080, "/connect");
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                con.setRequestMethod("GET");
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                if (response.toString().equals("Connected!")) {
+                    return true;
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (aBoolean) {
+                mConnectButton.setProgress(100);
+            } else {
+                mConnectButton.setProgress(-1);
+                mIpEdit.setEnabled(true);
+                mConnectButton.setEnabled(true);
+            }
+        }
+    };
 
     public SettingsFragment() {
         // Required empty public constructor

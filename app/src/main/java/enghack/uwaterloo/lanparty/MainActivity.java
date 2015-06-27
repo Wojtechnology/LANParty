@@ -1,5 +1,6 @@
 package enghack.uwaterloo.lanparty;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,8 +10,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -19,6 +23,9 @@ public class MainActivity extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    private boolean mConnected;
+    private boolean mMaster;
+    private String mIp;
 
     private CharSequence mTitle;
     private Server mServer;
@@ -43,6 +50,10 @@ public class MainActivity extends ActionBarActivity
             e.printStackTrace();
             Log.e("Nope","The server did not run!");
         }
+
+        mConnected = false;
+        mMaster = false;
+        mIp = "";
     }
 
     @Override
@@ -75,8 +86,9 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onConnectServer(int position) {
-
+    public void onConnectServer(String ip, boolean connected) {
+        mConnected = connected;
+        mIp = ip;
     }
 
     @Override
@@ -87,6 +99,11 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onDeleteSong(int position) {
 
+    }
+
+    @Override
+    public boolean getIsConnected() {
+        return mConnected;
     }
 
     public void onSectionAttached(int number) {
@@ -143,10 +160,6 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean connect(String ip) {
-        return false;
     }
 
 }
