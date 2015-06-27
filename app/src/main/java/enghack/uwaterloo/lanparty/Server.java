@@ -5,8 +5,15 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,7 @@ public class Server extends NanoHTTPD {
 
     @Override public Response serve(IHTTPSession session) {
         Map<String, List<String>> decodedQueryParameters = null;
+        final MainActivity main = (MainActivity) mContext;
 
         Map<String, String> files = null;
         try {
@@ -63,12 +71,49 @@ public class Server extends NanoHTTPD {
             }
 
             else if(method.equals("POST")) {
-                String[] params = uri.split("/");
-                Log.e("Params", Arrays.toString(params));
-                String artist = params[3];
-                String title = params[2];
-                Log.e("Artist", artist);
-                Log.e("Title", title);
+                String jsonstr = uri.substring(7);
+                Log.e("JSONSTR", jsonstr);
+                JSONObject metadata = null;
+                try {
+                    metadata = new JSONObject(jsonstr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.e("Artist", metadata.optString("artist"));
+                Log.e("Title", metadata.optString("title"));
+                final JSONObject finalMetadata = metadata;
+                main.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        main.setBottomBar(finalMetadata.optString("artist"), finalMetadata.optString("title"));
+                    }
+                });
+                //Saving to device
+                File destinationFolder = new File(main.getFilesDir(), metadata.optString("title") + ".mp3");
+                try {
+                    destinationFolder.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                File sourceFolder = new File(files.get("song"));
+                InputStream in = null;
+                OutputStream out = null;
+                try {
+                    Log.e("Creating", destinationFolder.getName());
+                    in = new FileInputStream(sourceFolder);
+                    out = new FileOutputStream(destinationFolder);
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while((len = in.read(buffer)) > 0) {
+                        out.write(buffer, 0, len);
+
+                    }
+                    in.close();
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {

@@ -9,8 +9,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-import java.io.IOException;
+import java.io.File;
 
 
 public class MainActivity extends ActionBarActivity
@@ -131,6 +132,11 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        for(File file : getFilesDir().listFiles()) {
+            Log.e("Deleting", file.getName());
+            deleteFile(file.getName());
+        }
+        Log.e("Length", getFilesDir().listFiles().length + "");
     }
 
     @Override
@@ -148,4 +154,8 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void setBottomBar(String artist, String title) {
+        TextView bottomBarText = (TextView) findViewById(R.id.bottom_bar_text);
+        bottomBarText.setText(artist + " - " + title);
+    }
 }
