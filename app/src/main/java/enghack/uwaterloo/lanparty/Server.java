@@ -1,9 +1,12 @@
 package enghack.uwaterloo.lanparty;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,36 +27,14 @@ public class Server extends NanoHTTPD {
     }
 
     @Override public Response serve(IHTTPSession session) {
-        Map<String, List<String>> decodedQueryParameters =
-                decodeParameters(session.getQueryParameterString());
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<head><title>Debug Server</title></head>");
-        sb.append("<body>");
-        sb.append("<h1>Debug Server</h1>");
-
-        sb.append("<p><blockquote><b>URI</b> = ").append(
-                String.valueOf(session.getUri())).append("<br />");
-
-        sb.append("<b>Method</b> = ").append(
-                String.valueOf(session.getMethod())).append("</blockquote></p>");
-
-        sb.append("<h3>Headers</h3><p><blockquote>").
-                append(session.getHeaders().toString()).append("</blockquote></p>");
-
-        sb.append("<h3>Parms</h3><p><blockquote>").
-                append(session.getParms().toString()).append("</blockquote></p>");
-
-        sb.append("<h3>Parms (multi values?)</h3><p><blockquote>").
-                append(decodedQueryParameters.toString()).append("</blockquote></p>");
+        Map<String, List<String>> decodedQueryParameters = null;
 
         Map<String, String> files = null;
         try {
             files = new HashMap<String, String>();
             session.parseBody(files);
-            sb.append("<h3>Files</h3><p><blockquote>").
-                    append(files.toString()).append("</blockquote></p>");
+            decodedQueryParameters =
+                    decodeParameters(session.getQueryParameterString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,13 +57,27 @@ public class Server extends NanoHTTPD {
         else {
             answer = "Hello World";
         }
-        if (uri.equals("/queue")) {
+        if (uri.startsWith("/queue")) {
             if(method.equals("GET")) {
                 //return queue
             }
 
             else if(method.equals("POST")) {
-                //Post to queue
+                String[] params = uri.split("/");
+                Log.e("Params", Arrays.toString(params));
+                String artist = params[3];
+                String title = params[2];
+                Log.e("Artist", artist);
+                Log.e("Title", title);
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(files.get("song"));
+                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.start();
             }
             else if(method.equals("DELETE")) {
                 //Delete works
@@ -97,42 +92,4 @@ public class Server extends NanoHTTPD {
         return new NanoHTTPD.Response(answer);
     }
 
-    /*@Override
-    public Response serve(String uri, Method method,
-                          Map<String, String> header,
-                          Map<String, String> parameters,
-                          final Map<String, String> files) {
-        final MainActivity main = (MainActivity) mContext;
-        Log.e("URI", uri);
-        Log.e("Method", method.toString());
-        Log.e("Headers", header.toString());
-        Log.e("Parameters", parameters.toString());
-        Log.e("Files", files.toString());
-        String answer;
-        if (parameters.get("name") != null) {
-            answer = "Hello " + parameters.get("name");
-        }
-        else {
-            answer = "Hello World";
-        }
-        if (uri.equals("/queue")) {
-            if(method.toString().equals("GET")) {
-                //return queue
-            }
-
-            else if(method.toString().equals("POST")) {
-                //Post to queue
-            }
-            else if(method.toString().equals("DELETE")) {
-                //Delete works
-            }
-        }
-        if (uri.equals("/connect")) {
-            if(method.toString().equals("GET")) {
-                answer = "Connected!";
-                return new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, answer);
-            }
-        }
-        return new NanoHTTPD.Response(answer);
-    }*/
 }
