@@ -27,7 +27,7 @@ public class Masterbater {
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Song oldSong = mSongQueue.pop_front();
                 try {
-                    mContext.deleteFile(oldSong.getUri());
+                    mContext.deleteFile(oldSong.getFile().getName());
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }

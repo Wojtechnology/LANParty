@@ -119,8 +119,9 @@ public class Server extends NanoHTTPD {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                mMasterbater.addSong(new Song(69, metadata.optString("title"), metadata.optString("artist"), destinationFolder.getName()));
+                Song newSong = new Song(69, metadata.optString("title"), metadata.optString("artist"), destinationFolder.getPath());
+                newSong.setFile(destinationFolder);
+                mMasterbater.addSong(newSong);
 
             }
             else if(method.equals("DELETE")) {
