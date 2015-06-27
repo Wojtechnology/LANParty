@@ -9,6 +9,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -26,6 +29,9 @@ public class MainActivity extends ActionBarActivity
     private int mState = DISCONNECTED;
     private String mIp = "";
     private Masterbater mMasterbater;
+    private Button mPlayButton;
+    private Button mNextButton;
+    private LinearLayout mPlayHint;
 
     private CharSequence mTitle;
 
@@ -46,6 +52,34 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mPlayButton = (Button) findViewById(R.id.play_hint_button);
+        mNextButton = (Button) findViewById(R.id.next_hint_button);
+        mPlayHint = (LinearLayout) findViewById(R.id.play_hint);
+        mPlayHint.setVisibility(View.INVISIBLE);
+
+        mPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mState == MASTER && mMasterbater != null){
+                    boolean isPlaying = mMasterbater.togglePlay();
+                    if (isPlaying){
+                        mPlayButton.setBackgroundResource(R.drawable.ic_pause_hint);
+                    } else {
+                        mPlayButton.setBackgroundResource(R.drawable.ic_play_hint);
+                    }
+                }
+            }
+        });
+
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mState == MASTER && mMasterbater != null){
+                    mMasterbater.playNext();
+                }
+            }
+        });
     }
 
     @Override
@@ -76,6 +110,11 @@ public class MainActivity extends ActionBarActivity
     public void onStateChanged(int state, String ip) {
         mState = state;
         mIp = ip;
+        if (state == MASTER) {
+            mPlayHint.setVisibility(View.VISIBLE);
+        }else{
+            mPlayHint.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -164,6 +203,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void setBottomBar(String artist, String title) {
+        mPlayButton.setBackgroundResource(R.drawable.ic_pause_hint);
         TextView hintTitle = (TextView) findViewById(R.id.hint_title);
         TextView hintArtist = (TextView) findViewById(R.id.hint_artist);
         hintTitle.setText(title);

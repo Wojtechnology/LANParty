@@ -25,16 +25,7 @@ public class Masterbater {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                Song oldSong = mSongQueue.pop_front();
-                try {
-                    mContext.deleteFile(oldSong.getFile().getName());
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-                if (mSongQueue.size() > 0){
-                    playSong(mSongQueue.peek_front());
-                }
-                updateQueue();
+
             }
         });
         try {
@@ -76,6 +67,7 @@ public class Masterbater {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(song.getUri());
             mMediaPlayer.prepare(); // might take long! (for buffering, etc)
+            ((MainActivity) mContext).setBottomBar(song.getArtist(), song.getTitle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,6 +78,38 @@ public class Masterbater {
         mServer.stop();
         mMediaPlayer.stop();
         mMediaPlayer.release();
+        ((MainActivity) mContext).setBottomBar("", "");
+    }
+
+    public void playNext(){
+        Song oldSong = mSongQueue.pop_front();
+        if (oldSong == null) return;
+        try {
+            mContext.deleteFile(oldSong.getFile().getName());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        if (mSongQueue.size() > 0){
+            playSong(mSongQueue.peek_front());
+        } else {
+            mMediaPlayer.stop();
+            ((MainActivity) mContext).setBottomBar("", "");
+        }
+        updateQueue();
+    }
+
+    public boolean togglePlay(){
+        if(mMediaPlayer.isPlaying()){
+            mMediaPlayer.pause();
+            return false;
+        }else{
+            mMediaPlayer.start();
+            return true;
+        }
+    }
+
+    public boolean isPlaying(){
+        return mMediaPlayer.isPlaying();
     }
 
 }
