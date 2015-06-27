@@ -27,8 +27,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -191,6 +193,34 @@ public class MyMusicFragment extends Fragment {
                                 barProgressDialog.hide();
                         }
                     });
+                }
+                else if (main.getState() == main.MASTER) {
+                    File destinationFolder = new File(main.getFilesDir(), clickedSong.getTitle() + ".mp3");
+                    try {
+                        destinationFolder.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    File sourceFolder = new File(clickedSong.getUri());
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        Log.e("Creating", destinationFolder.getName());
+                        in = new FileInputStream(sourceFolder);
+                        out = new FileOutputStream(destinationFolder);
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while((len = in.read(buffer)) > 0) {
+                            out.write(buffer, 0, len);
+
+                        }
+                        in.close();
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Song tempSong = new Song(0, clickedSong.getTitle(), clickedSong.getArtist(), destinationFolder.getPath());
+                    main.getMaster().addSong(tempSong);
                 }
             }
         });

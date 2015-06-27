@@ -3,7 +3,6 @@ package enghack.uwaterloo.lanparty;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import java.io.IOException;
