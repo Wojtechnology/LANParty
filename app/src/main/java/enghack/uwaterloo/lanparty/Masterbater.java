@@ -46,6 +46,10 @@ public class Masterbater {
         }
     }
 
+    public SongQueue getSongQueue() {
+        return mSongQueue;
+    }
+
     public void addSong(Song song){
         mSongQueue.push_back(song);
         if (mSongQueue.size() == 1 && !mMediaPlayer.isPlaying()){

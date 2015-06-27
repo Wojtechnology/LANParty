@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 
 /**
@@ -64,7 +65,14 @@ public class QueueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_queue, container, false);
+        View view = inflater.inflate(R.layout.fragment_queue, container, false);
+        MainActivity main = (MainActivity) getActivity();
+        if (main.getState() == main.MASTER) {
+            SongQueue songQueue = main.getMaster().getSongQueue();
+            ListView queueListView = (ListView) view.findViewById(R.id.queue_list);
+            queueListView.setAdapter(new QueueAdapter(getActivity(), songQueue));
+        }
+        return view;
     }
 
     @Override
