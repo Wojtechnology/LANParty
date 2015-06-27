@@ -20,14 +20,9 @@ import java.io.IOException;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
+
     private CharSequence mTitle;
 
     @Override
@@ -45,13 +40,12 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         Server mServer;
         try {
-            mServer = new Server();
+            mServer = new Server(this);
             mServer.start();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("Nope","Fuck");
+            Log.e("Nope","The server did not run!");
         }
-        Log.e("SNOOP DOGG", "DADADADADA");
     }
 
     @Override
