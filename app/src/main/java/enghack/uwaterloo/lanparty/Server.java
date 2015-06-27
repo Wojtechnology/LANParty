@@ -117,7 +117,7 @@ public class Server extends NanoHTTPD {
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
-                    mediaPlayer.setDataSource(files.get("song"));
+                    mediaPlayer.setDataSource(destinationFolder.getPath());
                     mediaPlayer.prepare(); // might take long! (for buffering, etc)
                 } catch (IOException e) {
                     e.printStackTrace();
