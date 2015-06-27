@@ -24,9 +24,9 @@ public class MainActivity extends ActionBarActivity
 
     private int mState = DISCONNECTED;
     private String mIp = "";
+    private Masterbater mMasterbater;
 
     private CharSequence mTitle;
-    private Server mServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +41,6 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-        try {
-            mServer = new Server(this);
-            mServer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Nope","The server did not run!");
-        }
-
-        Log.e("Recreate", "Recreate");
     }
 
     @Override
@@ -83,13 +74,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onAddSong(int position) {
-
-    }
-
-    @Override
-    public void onDeleteSong(int position) {
-
+    public void onMaster(Masterbater master) {
+        mMasterbater = master;
     }
 
     @Override
@@ -100,6 +86,11 @@ public class MainActivity extends ActionBarActivity
     @Override
     public String getIp() {
         return mIp;
+    }
+
+    @Override
+    public Masterbater getMaster() {
+        return mMasterbater;
     }
 
     public void onSectionAttached(int number) {
@@ -140,7 +131,6 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mServer.stop();
     }
 
     @Override

@@ -6,9 +6,9 @@ package enghack.uwaterloo.lanparty;
 public interface UniversalFragmentCallbacks {
     public void onNavigationDrawerItemSelected(int position);
     public void onStateChanged(int state, String ip);
-    public void onAddSong(int position);
-    public void onDeleteSong(int position);
+    public void onMaster(Masterbater master);
 
     public int getState();
     public String getIp();
+    public Masterbater getMaster();
 }

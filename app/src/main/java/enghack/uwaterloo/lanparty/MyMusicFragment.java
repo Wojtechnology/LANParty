@@ -4,18 +4,46 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.mashape.unirest.http.Unirest;
 
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -38,6 +66,7 @@ public class MyMusicFragment extends Fragment {
 
     private UniversalFragmentCallbacks mCallbacks;
     private ListView songListView;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -105,15 +134,16 @@ public class MyMusicFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Song clickedSong = (Song) parent.getAdapter().getItem(position);
                 MainActivity main = (MainActivity) getActivity();
+
                 if (main.getState() == main.CONNECTED) {
-                    /*AsyncHttpClient songClient = new AsyncHttpClient();
+                    AsyncHttpClient songClient = new AsyncHttpClient();
                     RequestParams params = new RequestParams();
                     params.put("title", clickedSong.getTitle());
                     params.put("artist", clickedSong.getArtist());
 
                     File songFile = new File(clickedSong.getUri());
                     try {
-                        params.put("song", songFile, "binary/octet-stream");
+                        params.put("song", songFile);
                     } catch (FileNotFoundException e) {
                         Log.e("Error", "FNFE");
                     }
@@ -127,10 +157,7 @@ public class MyMusicFragment extends Fragment {
                         public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                             Log.e("Failure", error.toString());
                         }
-                    }); */
-                    Unirest.post("http://" + main.getIp() + ":8080/queue")
-                            .field("title", clickedSong.getTitle())
-                            .field("artist", clickedSong.getArtist());
+                    });
                 }
             }
         });
