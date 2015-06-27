@@ -51,6 +51,12 @@ public class Server extends NanoHTTPD {
                 //Delete works
             }
         }
+        if (uri.equals("/connect")) {
+            if(method.toString().equals("GET")) {
+                answer = "Connected!";
+                return new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, answer);
+            }
+        }
         return new NanoHTTPD.Response(answer);
     }
 }
