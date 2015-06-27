@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -14,36 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.mashape.unirest.http.Unirest;
 
 import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -138,16 +118,16 @@ public class MyMusicFragment extends Fragment {
                 if (main.getState() == main.CONNECTED) {
                     AsyncHttpClient songClient = new AsyncHttpClient();
                     RequestParams params = new RequestParams();
-                    params.put("title", clickedSong.getTitle());
-                    params.put("artist", clickedSong.getArtist());
-
-                    File songFile = new File(clickedSong.getUri());
+                    songClient.addHeader("Content-Disposition", "form-data");
+                    songClient.addHeader("Content-Type", "audio/mp3");
                     try {
+                        InputStream songFile = new FileInputStream(clickedSong.getUri());
                         params.put("song", songFile);
                     } catch (FileNotFoundException e) {
                         Log.e("Error", "FNFE");
                     }
-                    songClient.post("http://" + main.getIp() + ":8080/queue", params, new AsyncHttpResponseHandler() {
+                    String url = "http://" + main.getIp() + ":8080/queue";
+                        songClient.post(url, params, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                             Log.e("Success", String.valueOf(statusCode));
