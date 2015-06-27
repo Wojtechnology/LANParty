@@ -3,10 +3,17 @@ package enghack.uwaterloo.lanparty;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.dd.CircularProgressButton;
+import com.dd.processbutton.iml.ActionProcessButton;
 
 
 /**
@@ -27,6 +34,11 @@ public class SettingsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private CircularProgressButton mCreateButton;
+    private TextView mIpDisplay;
+    private EditText mIpEdit;
+    private ActionProcessButton mConnectButton;
+
     private UniversalFragmentCallbacks mCallbacks;
 
     /**
@@ -45,6 +57,29 @@ public class SettingsFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mIpDisplay = (TextView) getView().findViewById(R.id.ip_display);
+        mIpEdit = (EditText) getView().findViewById(R.id.ip_edit);
+        mCreateButton = (CircularProgressButton) getView().findViewById(R.id.create_button);
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("SF", "Clicked Create");
+
+                mIpDisplay.setText("Running on " + Utils.getIPAddress(true));
+            }
+        });
+        mConnectButton = (ActionProcessButton) getView().findViewById(R.id.connect_button);
+        mConnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("SF", "Clicked Connect");
+            }
+        });
     }
 
     public SettingsFragment() {
@@ -76,6 +111,7 @@ public class SettingsFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
     }
 
     @Override

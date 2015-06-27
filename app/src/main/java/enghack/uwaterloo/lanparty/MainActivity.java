@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.IOException;
+import java.net.URL;
 
 
 public class MainActivity extends ActionBarActivity
@@ -49,7 +50,7 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        Fragment fragment = null;
+        Fragment fragment;
         switch (position) {
             case 0:
                 fragment = new SettingsFragment();
@@ -124,6 +125,12 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mServer.stop();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -136,6 +143,10 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean connect(String ip) {
+        return false;
     }
 
 }
