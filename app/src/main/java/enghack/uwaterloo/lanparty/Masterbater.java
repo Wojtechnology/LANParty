@@ -26,6 +26,7 @@ public class Masterbater {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 playNext();
+
             }
         });
         try {
@@ -67,7 +68,13 @@ public class Masterbater {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(song.getUri());
             mMediaPlayer.prepare(); // might take long! (for buffering, etc)
-            ((MainActivity) mContext).setBottomBar(song.getArtist(), song.getTitle());
+            final Song finalSong = song;
+            ((MainActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ((MainActivity) mContext).setBottomBar(finalSong.getArtist(), finalSong.getTitle());
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +85,12 @@ public class Masterbater {
         mServer.stop();
         mMediaPlayer.stop();
         mMediaPlayer.release();
-        ((MainActivity) mContext).setBottomBar("", "");
+        ((MainActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((MainActivity) mContext).setBottomBar("", "");
+            }
+        });
     }
 
     public void playNext(){
@@ -93,7 +105,12 @@ public class Masterbater {
             playSong(mSongQueue.peek_front());
         } else {
             mMediaPlayer.stop();
-            ((MainActivity) mContext).setBottomBar("", "");
+            ((MainActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ((MainActivity) mContext).setBottomBar("", "");
+                }
+            });
         }
         updateQueue();
     }
