@@ -25,7 +25,7 @@ public class Masterbater {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-
+                playNext();
             }
         });
         try {
