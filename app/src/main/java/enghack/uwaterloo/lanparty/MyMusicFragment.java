@@ -241,6 +241,7 @@ public class MyMusicFragment extends Fragment {
                         e.printStackTrace();
                     }
                     Song tempSong = new Song(0, clickedSong.getTitle(), clickedSong.getArtist(), destinationFolder.getPath());
+                    tempSong.setFile(destinationFolder);
                     main.getMaster().addSong(tempSong);
                 }
             }

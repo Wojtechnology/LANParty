@@ -40,6 +40,8 @@ public class MainActivity extends ActionBarActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+        onSectionAttached(1);
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -162,7 +164,9 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void setBottomBar(String artist, String title) {
-        TextView bottomBarText = (TextView) findViewById(R.id.bottom_bar_text);
-        bottomBarText.setText(artist + " - " + title);
+        TextView hintTitle = (TextView) findViewById(R.id.hint_title);
+        TextView hintArtist = (TextView) findViewById(R.id.hint_artist);
+        hintTitle.setText(title);
+        hintArtist.setText(artist);
     }
 }
