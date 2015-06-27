@@ -1,7 +1,9 @@
 package enghack.uwaterloo.lanparty;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,10 +21,18 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 
@@ -78,7 +88,7 @@ public class MyMusicFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_music, container, false);
 
@@ -116,18 +126,49 @@ public class MyMusicFragment extends Fragment {
                 MainActivity main = (MainActivity) getActivity();
 
                 if (main.getState() == main.CONNECTED) {
-                    AsyncHttpClient songClient = new AsyncHttpClient();
+                    final AsyncHttpClient songClient = new AsyncHttpClient();
                     RequestParams params = new RequestParams();
-                    songClient.addHeader("Content-Disposition", "form-data");
-                    songClient.addHeader("Content-Type", "audio/mp3");
+                    JSONObject jo = new JSONObject();
                     try {
-                        InputStream songFile = new FileInputStream(clickedSong.getUri());
+                        File songFile = new File(clickedSong.getUri());
+                        byte[] bFile = new byte[(int) songFile.length()];
+                        InputStream inputStream = new FileInputStream(songFile);
+                        inputStream.read(bFile);
+                        inputStream.close();
+                        //songFile.read()
                         params.put("song", songFile);
+                        jo.put("artist", clickedSong.getArtist());
+                        jo.put("title", clickedSong.getTitle());
                     } catch (FileNotFoundException e) {
                         Log.e("Error", "FNFE");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    String url = "http://" + main.getIp() + ":8080/queue";
-                        songClient.post(url, params, new AsyncHttpResponseHandler() {
+
+                    String url = null;
+                    try {
+                        url = "http://" + main.getIp() + ":8080/queue/" + URLEncoder.encode(jo.toString(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    };
+
+                    final ProgressDialog barProgressDialog = new ProgressDialog(getActivity());
+                    barProgressDialog.setTitle("Uploading Song");
+                    barProgressDialog.setMessage("Adding song to queue");
+                    barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+                    barProgressDialog.setProgress(0);
+                    barProgressDialog.setMax(100);
+                    barProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            songClient.cancelRequests(getActivity(), true);
+                        }
+                    });
+                    barProgressDialog.show();
+
+                    songClient.post(getActivity(), url, params, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                             Log.e("Success", String.valueOf(statusCode));
@@ -136,6 +177,20 @@ public class MyMusicFragment extends Fragment {
                         @Override
                         public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                             Log.e("Failure", error.toString());
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            super.onCancel();
+                            barProgressDialog.hide();
+                        }
+
+                        @Override
+                        public void onProgress(int bytesWritten, int totalSize) {
+                            super.onProgress(bytesWritten, totalSize);
+                            barProgressDialog.setProgress(100 * bytesWritten / totalSize);
+                            if (bytesWritten == totalSize)
+                                barProgressDialog.hide();
                         }
                     });
                 }

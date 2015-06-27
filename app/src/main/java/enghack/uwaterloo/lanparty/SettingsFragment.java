@@ -83,6 +83,7 @@ public class SettingsFragment extends Fragment {
                 if (state == MainActivity.CONNECTED) {
                     resetUI(MainActivity.DISCONNECTED, "");
                 } else if (state == MainActivity.DISCONNECTED) {
+                    mCreateButton.setProgress(50);
                     mCallbacks.onMaster(new Masterbater(getActivity()));
                     resetUI(MainActivity.MASTER, Utils.getIPAddress(true));
                 }
@@ -100,6 +101,8 @@ public class SettingsFragment extends Fragment {
                     mCallbacks.onMaster(null);
                     resetUI(MainActivity.DISCONNECTED, "");
                 } else if (state == MainActivity.DISCONNECTED) {
+                    mConnectButton.setMode(ActionProcessButton.Mode.ENDLESS);
+                    mConnectButton.setProgress(1);
                     new ConnectTask().execute(mIpEdit.getText().toString());
                 }
 

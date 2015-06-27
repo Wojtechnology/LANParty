@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">LANParty</string>
 
-    <string name="title_section1">Settings</string>
+    <string name="title_section1">Setup</string>
     <string name="title_section2">Queue</string>
     <string name="title_section3">My Music</string>
 
