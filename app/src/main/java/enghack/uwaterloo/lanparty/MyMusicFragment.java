@@ -37,6 +37,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -100,7 +102,8 @@ public class MyMusicFragment extends Fragment {
         ArrayList<Song> songList = new ArrayList<Song>();
         ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri,null, null, null, null);
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        Cursor musicCursor = musicResolver.query(musicUri,null, selection, null, null);
 
         if(musicCursor!=null && musicCursor.moveToFirst()){
             int titleColumn = musicCursor.getColumnIndex
@@ -117,6 +120,15 @@ public class MyMusicFragment extends Fragment {
                 String thisUri = musicCursor.getString(dataColumn);
                 songList.add(new Song(thisId, thisTitle, thisArtist, thisUri));
             } while (musicCursor.moveToNext());
+
+            Collections.sort(songList, new Comparator<Song>() {
+                @Override
+                public int compare(Song song, Song song2) {
+                    int compare = song.getArtist().compareTo(song2.getArtist());
+                    return ((compare == 0) ? song.getTitle().compareTo(
+                            song2.getTitle()) : compare);
+                }
+            });
         }
 
         final SongListAdapter adapter = new SongListAdapter(getActivity(), songList);
